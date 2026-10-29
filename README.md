@@ -1,160 +1,190 @@
 # MPP-Viewer
 
-Portabler, **schreibgeschützter** Viewer für Microsoft-Project-Dateien (`.mpp`) – mit Druck und Export.
-Die Oberfläche ist Microsoft Project nachempfunden (Menüband, Gantt-Diagramm, Tabellen, Seitenansicht),
-damit sich Kolleginnen und Kollegen nicht umgewöhnen müssen. Microsoft Project wird **nicht** benötigt.
+**English** · [Deutsch](README.de.md)
 
-![Gantt-Diagramm](docs/screenshot-gantt.png)
+[![Build](https://github.com/TripleTheP/mpp-viewer/actions/workflows/build.yml/badge.svg)](https://github.com/TripleTheP/mpp-viewer/actions/workflows/build.yml)
+[![CodeQL](https://github.com/TripleTheP/mpp-viewer/actions/workflows/codeql.yml/badge.svg)](https://github.com/TripleTheP/mpp-viewer/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/TripleTheP/mpp-viewer)](https://github.com/TripleTheP/mpp-viewer/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Funktionen
+A portable, read-only viewer for Microsoft Project files (`.mpp`) with printing and export to PDF, Excel, PNG and
+CSV. The user interface follows Microsoft Project (ribbon, Gantt chart, sheets, print preview), so anyone familiar
+with Project can use it right away. No Microsoft Project license, installation or administrator rights are
+required.
 
-**Anzeigen wie in Project**
-- Gantt-Diagramm, Überwachung: Gantt, Vorgang: Tabelle, Ressource: Tabelle
-- Spalten, Spaltennamen (auch eigene wie „Text1“ → „Kunde“), Reihenfolge und Breiten werden aus der Datei übernommen
-- Gespeicherte Sortierung, Filter und AutoFilter der Datei, Zellformate (Hintergrundfarben, Textfarbe, fett, kursiv,
-  unterstrichen) und Textarten
-- Sammelvorgänge zum Auf- und Zuklappen, Gliederungsebenen, Meilensteine, Basisplan, Fortschritt, kritischer Weg,
-  Stichtage, Unterbrechungen, Verknüpfungspfeile (EA/AA/EE/AE), arbeitsfreie Zeit, Heute-Linie
-- Indikatoren (Notizen, Einschränkungen, erledigt, Hyperlinks) mit Tooltip
-- Zoom per Strg+Mausrad, Zoomregler, „Gesamtes Projekt“, „Ausgewählte Vorgänge“, „Bildlauf zu Vorgang“
-- AutoFilter-Pfeile in den Spaltenköpfen zum Sortieren und Filtern
-- Informationen zum Vorgang / zur Ressource, Projektinformationen und Statistik (alles schreibgeschützt)
-- Suchen (Strg+F), Kopieren markierter Zeilen nach Excel (Strg+C)
-- Oberfläche **Deutsch oder Englisch** (Datei → Optionen), Datums- und Dauerformate wie in Project
-  („Mo 26.10.26“, „5 Tage“, „3EA+2 Tage“)
+![Gantt chart view](docs/screenshot-gantt.png)
 
-**Drucken** (Datei → Drucken, Strg+P)
+<sub>Screenshots show the German user interface; English is available under File → Options.</sub>
 
-![Drucken](docs/screenshot-drucken.png)
+## Features
 
-- Seitenansicht wie in Office mit Drucker, Kopien, Papierformat, Hoch-/Querformat
-- „An 1/2/3 Seite(n) Breite anpassen“, „Alles auf einer Seite“ oder fester Zoom
-- Zeitskala automatisch passend zur Seite, wie in der Ansicht oder fest (Tage/Wochen/Monate/Quartale)
-- Gesamtes Projekt oder bestimmter Zeitraum, nur Spalten links vom Teiler oder alle Spalten
-- Fußzeile mit Legende, Projektname, Datum und Seitenzahlen
+### Viewing
 
-**Exportieren** (Datei → Exportieren, F12)
-- **PDF** – Seiten wie in der Seitenansicht oder als ein großes Blatt, Vektorgrafik mit durchsuchbarem Text
-- **Excel (.xlsx)** – Vorgänge, Ressourcen und Projektdaten; mit Gliederung (Gruppierung), Datumswerten,
-  fixierter Kopfzeile und AutoFilter
-- **PNG** – die komplette Ansicht als Bild (100 % oder 200 %)
-- **CSV** – Semikolon (deutsch) bzw. Komma (englisch), UTF-8, öffnet direkt in Excel
+- Views: Gantt Chart, Tracking Gantt, Task Sheet and Resource Sheet
+- Uses the table definitions stored in the file: columns, custom column titles, order and widths
+- Applies the saved sort order, filters, AutoFilter settings and cell formatting (background and text color,
+  bold, italic, underline) from the file
+- Collapsible summary tasks, outline levels, milestones, baselines, progress, critical path, deadlines, split
+  tasks, dependency arrows (FS/SS/FF/SF), non-working time and a today line
+- Indicators for notes, constraints, completed tasks and hyperlinks, with tooltips
+- Zooming with Ctrl+mouse wheel or a zoom slider, plus Entire Project, Selected Tasks and Scroll to Task
+- Column AutoFilter menus for sorting and filtering
+- Read-only Task Information, Resource Information, Project Information and Statistics dialogs
+- Search (Ctrl+F) and copy of selected rows to Excel (Ctrl+C)
+- German or English user interface, with date and duration formats matching Microsoft Project
+
+### Printing
+
+![Print preview](docs/screenshot-drucken.png)
+
+- Office-style print preview with printer, copies, paper size and orientation
+- Fit to 1, 2 or 3 pages wide, fit everything on one page, or a fixed zoom level
+- Timescale fitted to the page automatically, taken from the view, or set to days, weeks, months or quarters
+- Entire project or a date range, columns left of the divider or all columns
+- Footer with legend, project name, date and page numbers
+
+### Export
+
+- **PDF**: paginated like the print preview or as a single large page, with vector graphics and searchable text
+- **Excel (.xlsx)**: tasks, resources and project properties, with outline grouping, real date values, a frozen
+  header row and AutoFilter
+- **PNG**: the complete view as an image at 100 % or 200 %
+- **CSV**: UTF-8, semicolon-separated (German) or comma-separated (English), opens directly in Excel
 
 ![AutoFilter](docs/screenshot-autofilter.png)
 
-**Unterstützte Dateien:** `.mpp` (Project 98 bis Project 2021 / Microsoft 365), `.mpt`, `.mpx`, Project-XML sowie
-weitere Formate, die [MPXJ](https://www.mpxj.org) lesen kann (z. B. Primavera XER/PMXML, Asta, GanttProject).
-Kennwortgeschützte Dateien können nicht geöffnet werden.
+### Supported files
 
-## Download und Start (Windows)
+`.mpp` (Project 98 to Project 2021 and Microsoft 365), `.mpt`, `.mpx`, Project XML and other formats supported by
+[MPXJ](https://www.mpxj.org), for example Primavera XER/PMXML, Asta Powerproject and GanttProject.
+Password-protected files are not supported.
 
-1. Unter [Releases](https://github.com/TripleTheP/mpp-viewer/releases) die Datei
-   `MPP-Viewer-<Version>-windows-x64-portable.zip` herunterladen.
-2. ZIP an einen beliebigen Ort entpacken – z. B. `C:\Tools`, einen USB-Stick oder ein Netzlaufwerk.
-3. `MPP-Viewer\MPP-Viewer.exe` starten. **Keine Installation, keine Administratorrechte, kein Java nötig.**
+<a id="download-und-start-windows"></a>
 
-Code-Signierung: Die Windows-Version wird über die SignPath Foundation signiert – free code signing provided by
-[SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)
-(siehe [Code signing policy](#code-signing-policy)).
+## Download and installation (Windows)
 
-Tipps:
-- `.mpp`-Datei per Drag & Drop ins Fenster ziehen oder im Explorer **Öffnen mit → MPP-Viewer.exe** wählen.
-- Zum Ausprobieren liegt `Beispielprojekt.xml` im Programmordner.
-- Einstellungen (Sprache, zuletzt geöffnete Dateien) werden pro Benutzer unter `%APPDATA%\MPP-Viewer` gespeichert.
-  Soll alles im Programmordner bleiben, dort eine leere Datei `portable.properties` anlegen.
+1. Download `MPP-Viewer-<version>-windows-x64-portable.zip` from the
+   [latest release](https://github.com/TripleTheP/mpp-viewer/releases/latest).
+2. Extract the archive to any location, for example `C:\Tools`, a USB drive or a network share.
+3. Run `MPP-Viewer\MPP-Viewer.exe`.
 
-## Export ohne Fenster (Skripte, geplante Aufgaben)
+The package includes its own Java runtime. No installation, administrator rights or separately installed Java are
+needed. Project files can be opened with drag and drop or with **Open with → MPP-Viewer.exe** in File Explorer.
+A sample project (`Beispielprojekt.xml`) is included in the program folder.
+
+Settings (language, window size, recently used files) are stored per user in `%APPDATA%\MPP-Viewer`. To keep
+them in the program folder instead, create an empty file named `portable.properties` next to `MPP-Viewer.exe`.
+
+**Code signing:** Windows releases are code-signed through the SignPath Foundation. Free code signing provided by
+[SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). See the
+[code signing policy](#code-signing-policy). Signing is currently being set up. Until signed releases are
+available, downloads can be verified with the published checksums and build attestations
+(see [Verifying downloads](#verifying-downloads)).
+
+## Command-line export
+
+Files can be exported without opening a window, for example from scripts or scheduled tasks:
 
 ```bat
-MPP-Viewer.exe --export "\\server\projekte\Plan.mpp" "C:\Berichte\Plan.pdf"
+MPP-Viewer.exe --export "\\server\projects\Plan.mpp" "C:\Reports\Plan.pdf"
 ```
 
-Das Format ergibt sich aus der Endung: `.pdf` (Seiten wie beim Drucken), `.xlsx`, `.csv` oder `.png`.
+The output format is determined by the file extension: `.pdf` (paginated like the print preview), `.xlsx`, `.csv`
+or `.png`. The exit code is `0` on success.
 
-## Tastenkürzel
+## Keyboard shortcuts
 
-| Kürzel | Funktion |
+| Shortcut | Action |
 | --- | --- |
-| Strg+O | Datei öffnen |
-| Strg+P | Drucken (Seitenansicht) |
-| F12 | Exportieren |
-| Strg+F | Suchen |
-| Strg+C | Markierte Zeilen kopieren |
-| Strg+Mausrad, Strg+Plus/Minus | Zeitskala zoomen |
-| Umschalt+Mausrad | Diagramm waagerecht scrollen |
-| Strg+Umschalt+F5 | Bildlauf zu Vorgang |
-| Alt+Umschalt+Minus/Plus | Teilvorgänge aus-/einblenden |
-| Doppelklick / Enter | Informationen zum Vorgang |
-| Strg+W | Datei schließen |
-| Esc | Backstage („Datei“) verlassen |
+| Ctrl+O | Open file |
+| Ctrl+P | Print preview |
+| F12 | Export |
+| Ctrl+F | Find |
+| Ctrl+C | Copy selected rows |
+| Ctrl+mouse wheel, Ctrl+Plus/Minus | Zoom the timescale |
+| Shift+mouse wheel | Scroll the chart horizontally |
+| Ctrl+Shift+F5 | Scroll to task |
+| Alt+Shift+Minus/Plus | Collapse/expand subtasks |
+| Double-click, Enter | Task Information |
+| Ctrl+W | Close file |
+| Esc | Leave the File (backstage) view |
 
-## Sicherheit und Einsatz im Unternehmen
+## Security and enterprise deployment
 
-- Keine Installation, keine Administratorrechte, keine Registry-Einträge, **keine Netzwerkverbindungen**
-  (kein Update-Check, keine Telemetrie). Projektdateien werden nur gelesen.
-- Jedes Release enthält SHA-256-Prüfsummen, einen von GitHub signierten Herkunftsnachweis (Build-Provenance) und
-  eine Stückliste aller Bibliotheken (SBOM). `MPP-Viewer.exe` wird über SignPath digital signiert (siehe unten).
-- Details für Administratoren (Schreibzugriffe, AppLocker/WDAC-Regeln, Prüfbefehle): [SECURITY.md](SECURITY.md)
+- No installation, no administrator rights and no registry changes
+- **No network connections**: no update checks, no telemetry and no online content
+- Project files are only read and never modified
+- Every release includes SHA-256 checksums, GitHub build provenance attestations and a CycloneDX software bill of
+  materials (SBOM)
+- Source code is analyzed with CodeQL, and dependencies are monitored by Dependabot
+
+[SECURITY.md](SECURITY.md) describes file system access, AppLocker/WDAC rules and how to report vulnerabilities.
+
+### Verifying downloads
+
+```powershell
+# Compare with SHA256SUMS.txt from the release
+Get-FileHash .\MPP-Viewer-<version>-windows-x64-portable.zip -Algorithm SHA256
+
+# Verify that the file was built by GitHub Actions from this repository (requires GitHub CLI)
+gh attestation verify .\MPP-Viewer-<version>-windows-x64-portable.zip --repo TripleTheP/mpp-viewer
+
+# Check the digital signature (signed releases)
+Get-AuthenticodeSignature .\MPP-Viewer\MPP-Viewer.exe
+```
 
 ## Code signing policy
 
 Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
 [SignPath Foundation](https://signpath.org).
 
-- Signiert wird nur `MPP-Viewer.exe`. Sie wird von GitHub Actions aus dem öffentlichen Quellcode dieses
-  Repositorys gebaut. Jede Signatur muss einzeln von einem Approver freigegeben werden.
-- Mitgelieferte Fremdkomponenten (Java-Laufzeit von Eclipse Temurin, Java-Bibliotheken, FlatLaf-DLL) werden
-  unverändert und nicht mit dem Projektzertifikat signiert ausgeliefert.
+- Only `MPP-Viewer.exe` is signed. It is built by GitHub Actions on GitHub-hosted runners from the public source
+  code in this repository.
+- Every signing request is approved manually by an approver.
+- Bundled third-party components (the Eclipse Temurin Java runtime, Java libraries and the FlatLaf native library)
+  are shipped unmodified and are not signed with the project certificate.
 
-| Rolle | Mitglieder |
+| Role | Members |
 | --- | --- |
-| Committer und Reviewer | [TripleTheP](https://github.com/TripleTheP) |
-| Approver | [TripleTheP](https://github.com/TripleTheP) |
+| Committers and reviewers | [TripleTheP](https://github.com/TripleTheP) |
+| Approvers | [TripleTheP](https://github.com/TripleTheP) |
 
-**Datenschutz / Privacy:** This program will not transfer any information to other networked systems unless
-specifically requested by the user or the person installing or operating it.
-Das Programm überträgt keine Informationen an andere Systeme im Netzwerk, sofern dies nicht ausdrücklich von der
-Benutzerin oder dem Benutzer bzw. der installierenden oder betreibenden Person veranlasst wird.
+**Privacy policy:** This program will not transfer any information to other networked systems unless specifically
+requested by the user or the person installing or operating it.
 
-## Selbst bauen
+## Building from source
 
-Voraussetzungen: JDK 25 und Maven 3.9.
+Requirements: JDK 25 and Maven 3.9.
 
 ```bash
-mvn package                       # Programm + Tests, Ergebnis in target/dist
+mvn package                       # build and run tests; output in target/dist
 java -jar target/dist/mpp-viewer.jar
-bash packaging/build-portable.sh  # portable Version mit eigener Java-Laufzeit (unter Windows in Git Bash)
+bash packaging/build-portable.sh  # portable package with a bundled Java runtime (on Windows: Git Bash)
 ```
 
-Die Windows-Version wird automatisch von GitHub Actions gebaut:
-- jeder Push: Tests und ein portables ZIP als Build-Artefakt
-- neue Version in der `pom.xml` auf `main` (z. B. `1.0.1`): automatisch ein GitHub-Release mit dem ZIP
+GitHub Actions builds and tests every push on Linux and Windows. When the version in `pom.xml` changes on `main`, a
+release with the portable Windows package is created automatically.
 
-## Aufbau des Quellcodes
+### Project structure
 
-| Paket | Inhalt |
+| Package | Contents |
 | --- | --- |
-| `core` | Laden der Datei (MPXJ), Spalten, Gliederung, Sortierung/Filter, Formate wie in Project |
-| `render` | Zeichnen von Tabelle, Zeitskala und Gantt-Diagramm – gemeinsam für Bildschirm, Druck und Export |
-| `print` | Seitenaufteilung, Druck und Seitenansicht |
-| `export` | PDF, PNG, Excel (eigener schlanker XLSX-Writer) und CSV |
-| `ui` | Hauptfenster, Menüband, Backstage, Dialoge |
-| `i18n` | Deutsche und englische Texte |
+| `core` | File loading (MPXJ), columns, outline, sorting and filtering, Project-style formatting |
+| `render` | Drawing of sheets, timescale and Gantt chart, shared by screen, print and export |
+| `print` | Pagination, printing and print preview |
+| `export` | PDF, PNG, Excel (built-in lightweight XLSX writer) and CSV |
+| `ui` | Main window, ribbon, backstage view and dialogs |
+| `i18n` | German and English texts |
 
-## Lizenz
+## Contributing
 
-MIT – siehe [LICENSE](LICENSE). Verwendete Bibliotheken und deren Lizenzen: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
-„Microsoft Project“ ist eine Marke der Microsoft Corporation; dieses Projekt steht in keiner Verbindung zu Microsoft.
+Bug reports and suggestions are welcome as [GitHub issues](https://github.com/TripleTheP/mpp-viewer/issues). Please
+report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
----
+## License
 
-## English
+MPP-Viewer is released under the [MIT license](LICENSE). Third-party components and their licenses are listed in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
-MPP-Viewer is a portable, read-only viewer for Microsoft Project files with a Project-like user interface
-(ribbon, Gantt chart, sheets, print preview), printing and export to PDF, Excel, PNG and CSV.
-Download the portable Windows ZIP from the releases page, unzip it anywhere and start `MPP-Viewer.exe` – no
-installation and no Java required. Switch the language under File → Options.
-
-The program makes no network connections and never modifies project files. Releases include SHA-256 checksums,
-GitHub build-provenance attestations and a CycloneDX SBOM; `MPP-Viewer.exe` is code-signed via SignPath – see the
-[code signing policy](#code-signing-policy) and [SECURITY.md](SECURITY.md).
+Microsoft and Microsoft Project are trademarks of the Microsoft group of companies. This project is not affiliated
+with, endorsed by or sponsored by Microsoft.
