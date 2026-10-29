@@ -118,7 +118,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
+        <version>3.6.1</version>
         <configuration>
           <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dlog4j2.loggerContextFactory=org.apache.logging.log4j.simple.SimpleLoggerContextFactory</argLine>
           <systemPropertyVariables>
