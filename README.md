@@ -59,6 +59,14 @@ Tipps:
 - Einstellungen (Sprache, zuletzt geöffnete Dateien) werden pro Benutzer unter `%APPDATA%\MPP-Viewer` gespeichert.
   Soll alles im Programmordner bleiben, dort eine leere Datei `portable.properties` anlegen.
 
+## Export ohne Fenster (Skripte, geplante Aufgaben)
+
+```bat
+MPP-Viewer.exe --export "\\server\projekte\Plan.mpp" "C:\Berichte\Plan.pdf"
+```
+
+Das Format ergibt sich aus der Endung: `.pdf` (Seiten wie beim Drucken), `.xlsx`, `.csv` oder `.png`.
+
 ## Tastenkürzel
 
 | Kürzel | Funktion |

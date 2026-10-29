@@ -11,7 +11,7 @@ import java.io.File;
 
 /**
  * Startpunkt des MPP-Viewers. Ein optionaler Dateipfad als Argument wird direkt geöffnet
- * (z. B. über „Öffnen mit“ im Windows-Explorer).
+ * (z. B. über „Öffnen mit“ im Windows-Explorer). Mit {@code --export <Datei> <Ziel>} wird ohne Fenster exportiert.
  */
 public final class App
 {
@@ -28,6 +28,13 @@ public final class App
 
       Settings settings = Settings.load();
       I18n.setLanguage(settings.getLanguage());
+
+      if (args.length >= 3 && "--export".equalsIgnoreCase(args[0]))
+      {
+         System.setProperty("java.awt.headless", "true");
+         System.exit(BatchExport.run(args[1], args[2]));
+         return;
+      }
 
       SwingUtilities.invokeLater(() ->
       {
