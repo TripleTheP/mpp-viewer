@@ -114,7 +114,7 @@ Benutzerin oder dem Benutzer bzw. der installierenden oder betreibenden Person v
 
 ## Selbst bauen
 
-Voraussetzungen: JDK 21 und Maven 3.9.
+Voraussetzungen: JDK 25 und Maven 3.9.
 
 ```bash
 mvn package                       # Programm + Tests, Ergebnis in target/dist

@@ -5,7 +5,7 @@
 #   3. ZIP-Archiv zum Weitergeben (entfällt mit NO_ZIP=1, z. B. wenn vorher noch signiert wird;
 #      das ZIP erzeugt dann packaging/zip-portable.sh)
 #
-# Voraussetzung: JDK 21 oder neuer und ein vorheriges "mvn package".
+# Voraussetzung: JDK 25 oder neuer und ein vorheriges "mvn package".
 # Unter Windows in Git Bash ausführen (in GitHub Actions: shell: bash).
 set -euo pipefail
 
