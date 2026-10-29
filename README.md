@@ -96,7 +96,7 @@ bash packaging/build-portable.sh  # portable Version mit eigener Java-Laufzeit (
 
 Die Windows-Version wird automatisch von GitHub Actions gebaut:
 - jeder Push: Tests und ein portables ZIP als Build-Artefakt
-- ein Tag `v*` (z. B. `v1.0.1`): zusätzlich ein GitHub-Release mit dem ZIP
+- neue Version in der `pom.xml` auf `main` (z. B. `1.0.1`): automatisch ein GitHub-Release mit dem ZIP
 
 ## Aufbau des Quellcodes
 
