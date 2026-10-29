@@ -212,5 +212,10 @@ jobs:
             echo
             echo "Hinweise für Administratoren: [SECURITY.md](https://github.com/$GITHUB_REPOSITORY/blob/v$VERSION/SECURITY.md) · [Code signing policy](https://github.com/$GITHUB_REPOSITORY#code-signing-policy)"
           } > release-notes.md
-          gh release create "v$VERSION" "$ZIP" target/package/SHA256SUMS.txt target/package/*.cdx.json \
-            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "MPP-Viewer $VERSION" --notes-file release-notes.md
+          ls -la target/package
+          if ! out=$(gh release create "v$VERSION" "$ZIP" target/package/SHA256SUMS.txt target/package/*.cdx.json \
+              --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "MPP-Viewer $VERSION" --notes-file release-notes.md 2>&1); then
+            echo "::error title=gh release create::$(echo "$out" | tr '\r\n' '  ')"
+            exit 1
+          fi
+          echo "$out"
