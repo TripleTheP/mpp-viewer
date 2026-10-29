@@ -1,0 +1,15 @@
+# Hält Bibliotheken (Maven) und GitHub Actions aktuell – Sicherheitsupdates kommen als Pull Request.
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']

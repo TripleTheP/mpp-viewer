@@ -84,6 +84,34 @@ Das Format ergibt sich aus der Endung: `.pdf` (Seiten wie beim Drucken), `.xlsx`
 | Strg+W | Datei schließen |
 | Esc | Backstage („Datei“) verlassen |
 
+## Sicherheit und Einsatz im Unternehmen
+
+- Keine Installation, keine Administratorrechte, keine Registry-Einträge, **keine Netzwerkverbindungen**
+  (kein Update-Check, keine Telemetrie). Projektdateien werden nur gelesen.
+- Jedes Release enthält SHA-256-Prüfsummen, einen von GitHub signierten Herkunftsnachweis (Build-Provenance) und
+  eine Stückliste aller Bibliotheken (SBOM). `MPP-Viewer.exe` wird über SignPath digital signiert (siehe unten).
+- Details für Administratoren (Schreibzugriffe, AppLocker/WDAC-Regeln, Prüfbefehle): [SECURITY.md](SECURITY.md)
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
+[SignPath Foundation](https://signpath.org).
+
+- Signiert wird nur `MPP-Viewer.exe`. Sie wird von GitHub Actions aus dem öffentlichen Quellcode dieses
+  Repositorys gebaut. Jede Signatur muss einzeln von einem Approver freigegeben werden.
+- Mitgelieferte Fremdkomponenten (Java-Laufzeit von Eclipse Temurin, Java-Bibliotheken, FlatLaf-DLL) werden
+  unverändert und nicht mit dem Projektzertifikat signiert ausgeliefert.
+
+| Rolle | Mitglieder |
+| --- | --- |
+| Committer und Reviewer | [TripleTheP](https://github.com/TripleTheP) |
+| Approver | [TripleTheP](https://github.com/TripleTheP) |
+
+**Datenschutz / Privacy:** This program will not transfer any information to other networked systems unless
+specifically requested by the user or the person installing or operating it.
+Das Programm überträgt keine Informationen an andere Systeme im Netzwerk, sofern dies nicht ausdrücklich von der
+Benutzerin oder dem Benutzer bzw. der installierenden oder betreibenden Person veranlasst wird.
+
 ## Selbst bauen
 
 Voraussetzungen: JDK 21 und Maven 3.9.
@@ -122,3 +150,7 @@ MPP-Viewer is a portable, read-only viewer for Microsoft Project files with a Pr
 (ribbon, Gantt chart, sheets, print preview), printing and export to PDF, Excel, PNG and CSV.
 Download the portable Windows ZIP from the releases page, unzip it anywhere and start `MPP-Viewer.exe` – no
 installation and no Java required. Switch the language under File → Options.
+
+The program makes no network connections and never modifies project files. Releases include SHA-256 checksums,
+GitHub build-provenance attestations and a CycloneDX SBOM; `MPP-Viewer.exe` is code-signed via SignPath – see the
+[code signing policy](#code-signing-policy) and [SECURITY.md](SECURITY.md).

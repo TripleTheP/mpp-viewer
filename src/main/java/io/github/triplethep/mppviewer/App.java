@@ -25,6 +25,7 @@ public final class App
       System.setProperty("log4j2.loggerContextFactory", "org.apache.logging.log4j.simple.SimpleLoggerContextFactory");
       System.setProperty("org.apache.logging.log4j.simplelog.StatusLogger.level", "OFF");
       System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+      hardenXmlParsing();
 
       Settings settings = Settings.load();
       I18n.setLanguage(settings.getLanguage());
@@ -47,5 +48,24 @@ public final class App
             frame.openFile(new File(args[0]));
          }
       });
+   }
+
+   /**
+    * XML-basierte Projektdateien (Project-XML, Primavera, GanttProject …) dürfen keine externen Dateien oder
+    * Netzwerkadressen nachladen (Schutz vor „XML External Entity“-Angriffen über präparierte Dateien).
+    */
+   static void hardenXmlParsing()
+   {
+      for (String key : new String[] {"javax.xml.accessExternalDTD", "javax.xml.accessExternalSchema", "javax.xml.accessExternalStylesheet"})
+      {
+         if (System.getProperty(key) == null)
+         {
+            System.setProperty(key, "");
+         }
+      }
+      if (System.getProperty("jdk.xml.enableExtensionFunctions") == null)
+      {
+         System.setProperty("jdk.xml.enableExtensionFunctions", "false");
+      }
    }
 }

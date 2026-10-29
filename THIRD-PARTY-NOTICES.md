@@ -15,7 +15,7 @@ eigenständige JAR-Dateien im Ordner `app/lib` (sie können dort jederzeit durch
 | [Jackcess](https://jackcess.sourceforge.io) | Access-basierte Projektformate | Apache 2.0 |
 | [jsoup](https://jsoup.org) | HTML-Notizen | MIT |
 | [Jackson](https://github.com/FasterXML/jackson) (core, databind, annotations) | JSON-basierte Formate | Apache 2.0 |
-| [FlatLaf](https://www.formdev.com/flatlaf) | Look-and-Feel, Titelleiste | Apache 2.0 |
+| [FlatLaf](https://www.formdev.com/flatlaf) (inkl. `flatlaf-<version>-windows-x86_64.dll` aus dem FlatLaf-Jar) | Look-and-Feel, Titelleiste | Apache 2.0 |
 | [Apache PDFBox](https://pdfbox.apache.org) (pdfbox, pdfbox-io, fontbox) | PDF-Export | Apache 2.0 |
 | [pdfbox-graphics2d](https://github.com/rototor/pdfbox-graphics2d) | Vektorgrafik im PDF | Apache 2.0 |
 | [Eclipse Temurin / OpenJDK](https://adoptium.net) (verkleinerte Laufzeit im Ordner `runtime`) | Java-Laufzeit | GPL 2.0 mit Classpath Exception |

@@ -2,14 +2,18 @@ name: Release
 
 # Ein Release entsteht automatisch, sobald auf main eine neue Version in der pom.xml steht
 # (oder ein Tag v* gepusht wird). Bereits vorhandene Releases werden nicht verändert.
+#
+# Signierung über SignPath (kostenlose Open-Source-Signierung der SignPath Foundation):
+# Sie ist aktiv, sobald das Repository-Secret SIGNPATH_API_TOKEN und die Repository-Variable
+# SIGNPATH_ORGANIZATION_ID gesetzt sind. Optional: SIGNPATH_PROJECT_SLUG (Standard: mpp-viewer) und
+# SIGNPATH_SIGNING_POLICY_SLUG (Standard: release-signing). Ohne diese Angaben entsteht ein unsigniertes Release.
 on:
   push:
     branches: [main]
     tags: ['v*']
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 concurrency:
   group: release
@@ -19,8 +23,20 @@ jobs:
   release:
     name: Release für Windows bauen
     runs-on: windows-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write        # Release anlegen
+      actions: read          # SignPath lädt das Artefakt aus diesem Lauf
+      id-token: write        # Herkunftsnachweis (Attestation)
+      attestations: write
+    env:
+      SIGNPATH_PROJECT_SLUG: ${{ vars.SIGNPATH_PROJECT_SLUG || 'mpp-viewer' }}
+      SIGNPATH_SIGNING_POLICY_SLUG: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG || 'release-signing' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
       - name: Version ermitteln
         id: version
         shell: bash
@@ -33,29 +49,59 @@ jobs:
             VERSION=$(sed -n 's:.*<version>\([0-9][^<]*\)</version>.*:\1:p' pom.xml | head -1)
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if gh release view "v$VERSION" > /dev/null 2>&1; then
+          if gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             echo "Release v$VERSION existiert bereits – nichts zu tun."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/setup-java@v5
+
+      - name: Signierung konfiguriert?
+        id: signpath
+        if: steps.version.outputs.skip == 'false'
+        shell: bash
+        env:
+          TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+          ORG: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ORG" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "SignPath-Signierung aktiv (Projekt $SIGNPATH_PROJECT_SLUG, Richtlinie $SIGNPATH_SIGNING_POLICY_SLUG)."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::SignPath ist nicht eingerichtet – das Release wird nicht signiert."
+          fi
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         if: steps.version.outputs.skip == 'false'
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build and test
+
+      - name: Bauen und testen
         if: steps.version.outputs.skip == 'false'
         shell: bash
         run: |
           mvn -B -ntp versions:set -DnewVersion="${{ steps.version.outputs.version }}" -DgenerateBackupPoms=false
           mvn -B -ntp package
-      - name: Package (jlink + jpackage)
+
+      - name: Stückliste der Bibliotheken (SBOM, CycloneDX)
         if: steps.version.outputs.skip == 'false'
         shell: bash
+        run: |
+          mvn -B -ntp org.cyclonedx:cyclonedx-maven-plugin:2.9.3:makeBom -DoutputFormat=json -DoutputName=sbom -DincludeTestScope=false
+          mkdir -p target/package
+          cp target/sbom.json "target/package/MPP-Viewer-${{ steps.version.outputs.version }}-sbom.cdx.json"
+
+      - name: App-Image erzeugen (jlink + jpackage)
+        if: steps.version.outputs.skip == 'false'
+        shell: bash
+        env:
+          NO_ZIP: '1'
         run: bash packaging/build-portable.sh "${{ steps.version.outputs.version }}"
-      - name: Smoke test
+
+      - name: Starttest vor dem Signieren
         if: steps.version.outputs.skip == 'false'
         shell: bash
         run: |
@@ -63,21 +109,97 @@ jobs:
           ./MPP-Viewer.exe --export Beispielprojekt.xml smoke.pdf
           test -s smoke.pdf
           rm smoke.pdf
+
+      - name: Unsigniertes App-Image hochladen
+        id: upload-unsigned
+        if: steps.version.outputs.skip == 'false' && steps.signpath.outputs.enabled == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: MPP-Viewer-${{ steps.version.outputs.version }}-unsigned
+          path: target/package/MPP-Viewer
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Mit SignPath signieren (wartet auf Freigabe)
+        if: steps.version.outputs.skip == 'false' && steps.signpath.outputs.enabled == 'true'
+        uses: signpath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v3.0
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ env.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: target/signed
+          parameters: |
+            version: ${{ toJSON(steps.version.outputs.version) }}
+
+      - name: Signiertes App-Image übernehmen und prüfen
+        if: steps.version.outputs.skip == 'false' && steps.signpath.outputs.enabled == 'true'
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force target/package/MPP-Viewer
+          Move-Item target/signed target/package/MPP-Viewer
+          $sig = Get-AuthenticodeSignature target/package/MPP-Viewer/MPP-Viewer.exe
+          Write-Host "Signatur: $($sig.Status) – $($sig.SignerCertificate.Subject)"
+          Write-Host "Zeitstempel: $($sig.TimeStamperCertificate.Subject)"
+          if ($env:SIGNPATH_SIGNING_POLICY_SLUG -eq 'release-signing' -and $sig.Status -ne 'Valid') {
+            throw "MPP-Viewer.exe ist nicht gültig signiert ($($sig.Status))."
+          }
+
+      - name: Starttest und ZIP
+        if: steps.version.outputs.skip == 'false'
+        shell: bash
+        run: |
+          (cd target/package/MPP-Viewer && ./MPP-Viewer.exe --export Beispielprojekt.xml smoke.pdf && test -s smoke.pdf && rm smoke.pdf)
+          bash packaging/zip-portable.sh "${{ steps.version.outputs.version }}"
+          cd target/package
+          for f in *.zip *.cdx.json MPP-Viewer/MPP-Viewer.exe; do
+            printf '%s  %s\n' "$(sha256sum "$f" | cut -d' ' -f1)" "$f"
+          done > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Herkunftsnachweis (Build-Provenance) erzeugen
+        if: steps.version.outputs.skip == 'false'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            target/package/*.zip
+            target/package/MPP-Viewer/MPP-Viewer.exe
+
       - name: GitHub-Release anlegen
         if: steps.version.outputs.skip == 'false'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          SIGNED: ${{ steps.signpath.outputs.enabled }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           ZIP=$(ls target/package/*.zip)
+          ZIPNAME=$(basename "$ZIP")
           {
             echo "## MPP-Viewer $VERSION"
             echo
-            echo "**Download:** \`$(basename "$ZIP")\` herunterladen, entpacken und \`MPP-Viewer\\MPP-Viewer.exe\` starten."
+            echo "**Download:** \`$ZIPNAME\` herunterladen, entpacken und \`MPP-Viewer\\MPP-Viewer.exe\` starten."
             echo "Keine Installation, keine Administratorrechte, kein Java nötig."
             echo
             echo "Schreibgeschützter Viewer für Microsoft-Project-Dateien (.mpp) im Stil von Microsoft Project"
             echo "mit Druck/Seitenansicht und Export nach PDF, Excel, PNG und CSV. Oberfläche Deutsch/Englisch."
+            echo
+            echo "### Echtheit prüfen"
+            if [ "$SIGNED" = "true" ]; then
+              echo "- \`MPP-Viewer.exe\` ist digital signiert (Herausgeber: SignPath Foundation)."
+              echo "  Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)."
+            else
+              echo "- Diese Version ist **nicht** digital signiert."
+            fi
+            echo "- SHA-256-Prüfsummen: \`SHA256SUMS.txt\` – in PowerShell: \`Get-FileHash $ZIPNAME\`"
+            echo "- Herkunftsnachweis (gebaut von GitHub Actions aus diesem Repository):"
+            echo "  \`gh attestation verify $ZIPNAME --repo $GITHUB_REPOSITORY\`"
+            echo "- Stückliste aller enthaltenen Bibliotheken (SBOM, CycloneDX): \`MPP-Viewer-$VERSION-sbom.cdx.json\`"
+            echo
+            echo "Hinweise für Administratoren: [SECURITY.md](https://github.com/$GITHUB_REPOSITORY/blob/v$VERSION/SECURITY.md) · [Code signing policy](https://github.com/$GITHUB_REPOSITORY#code-signing-policy)"
           } > release-notes.md
-          gh release create "v$VERSION" "$ZIP" --target "$GITHUB_SHA" --title "MPP-Viewer $VERSION" --notes-file release-notes.md
+          gh release create "v$VERSION" "$ZIP" target/package/SHA256SUMS.txt target/package/*.cdx.json \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "MPP-Viewer $VERSION" --notes-file release-notes.md

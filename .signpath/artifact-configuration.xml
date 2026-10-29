@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SignPath-Artifact-Configuration für den MPP-Viewer.
+  Diese Datei ist eine Vorlage: Inhalt in SignPath unter Project "mpp-viewer" → Artifact Configurations einfügen.
+
+  Das Artefakt ist das App-Image (Inhalt von target/package/MPP-Viewer), das GitHub Actions als ZIP hochlädt.
+  Signiert wird nur der eigene Programmstarter MPP-Viewer.exe. Die mitgelieferte Java-Laufzeit (runtime/)
+  stammt unverändert aus Eclipse Temurin und wird nicht mit dem Projektzertifikat signiert.
+-->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file path="MPP-Viewer.exe" product-name="MPP-Viewer" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

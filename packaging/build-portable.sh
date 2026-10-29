@@ -2,7 +2,8 @@
 # Baut die portable Version des MPP-Viewers:
 #   1. eigene, verkleinerte Java-Laufzeit (jlink)
 #   2. App-Image mit MPP-Viewer.exe (jpackage)
-#   3. ZIP-Archiv zum Weitergeben
+#   3. ZIP-Archiv zum Weitergeben (entfällt mit NO_ZIP=1, z. B. wenn vorher noch signiert wird;
+#      das ZIP erzeugt dann packaging/zip-portable.sh)
 #
 # Voraussetzung: JDK 21 oder neuer und ein vorheriges "mvn package".
 # Unter Windows in Git Bash ausführen (in GitHub Actions: shell: bash).
@@ -44,6 +45,21 @@ jlink \
    --compress=zip-6 \
    --output "$RUNTIME"
 
+# FlatLaf entpackt seine native Bibliothek sonst beim Start in den Temp-Ordner – in Firmenumgebungen ist das
+# Laden von DLLs aus %TEMP% oft gesperrt (AppLocker/WDAC). Liegt die DLL neben flatlaf-<version>.jar, wird sie
+# direkt aus dem Programmordner geladen.
+rm -f "$DIST"/lib/flatlaf-*-windows-*.dll
+if [ "$PLATFORM" = "windows" ]; then
+   FLATLAF_JAR=$(ls "$DIST"/lib/flatlaf-*.jar | head -1)
+   FLATLAF_BASE=$(basename "$FLATLAF_JAR" .jar)
+   NATIVES_TMP="target/flatlaf-natives"
+   rm -rf "$NATIVES_TMP" && mkdir -p "$NATIVES_TMP"
+   ABS_JAR="$(cd "$(dirname "$FLATLAF_JAR")" && pwd)/$(basename "$FLATLAF_JAR")"
+   (cd "$NATIVES_TMP" && jar xf "$ABS_JAR" com/formdev/flatlaf/natives/flatlaf-windows-x86_64.dll)
+   cp "$NATIVES_TMP/com/formdev/flatlaf/natives/flatlaf-windows-x86_64.dll" "$DIST/lib/$FLATLAF_BASE-windows-x86_64.dll"
+   echo ">> FlatLaf-DLL: $DIST/lib/$FLATLAF_BASE-windows-x86_64.dll"
+fi
+
 echo ">> App-Image erzeugen ($PLATFORM, Version $VERSION)"
 ICON_ARG=()
 if [ -n "$ICON" ]; then
@@ -53,9 +69,9 @@ jpackage \
    --type app-image \
    --name "$NAME" \
    --app-version "$VERSION" \
-   --vendor "MPP-Viewer" \
-   --description "Schreibgeschützter Viewer für Microsoft-Project-Dateien" \
-   --copyright "MIT License" \
+   --vendor "TripleTheP" \
+   --description "MPP-Viewer - schreibgeschützter Viewer für Microsoft-Project-Dateien" \
+   --copyright "Copyright (c) 2026 TripleTheP, MIT License" \
    "${ICON_ARG[@]}" \
    --input "$DIST" \
    --main-jar mpp-viewer.jar \
@@ -63,6 +79,8 @@ jpackage \
    --runtime-image "$RUNTIME" \
    --java-options "-Dfile.encoding=UTF-8" \
    --java-options "-Xss2m" \
+   --java-options "-XX:+DisableAttachMechanism" \
+   --java-options "-XX:-UsePerfData" \
    --dest "$OUT"
 
 if [ "$PLATFORM" = "macos" ]; then
@@ -74,20 +92,12 @@ fi
 cp README.md "$IMAGE/LIESMICH.md"
 cp LICENSE "$IMAGE/LICENSE.txt"
 cp THIRD-PARTY-NOTICES.md "$IMAGE/THIRD-PARTY-NOTICES.md"
+cp SECURITY.md "$IMAGE/SECURITY.md"
 cp samples/Beispielprojekt.xml "$IMAGE/Beispielprojekt.xml"
 
-ARCHIVE="$NAME-$VERSION-$PLATFORM-x64-portable.zip"
-echo ">> Archiv $ARCHIVE packen"
-(
-   cd "$OUT"
-   if command -v 7z > /dev/null 2>&1; then
-      7z a -tzip -mx=9 "$ARCHIVE" "$(basename "$IMAGE")" > /dev/null
-   elif command -v zip > /dev/null 2>&1; then
-      zip -qr9 "$ARCHIVE" "$(basename "$IMAGE")"
-   else
-      powershell -NoProfile -Command "Compress-Archive -Path '$(basename "$IMAGE")' -DestinationPath '$ARCHIVE'"
-   fi
-)
+if [ "${NO_ZIP:-0}" = "1" ]; then
+   echo ">> Fertig (ohne ZIP): $IMAGE"
+   exit 0
+fi
 
-echo ">> Fertig: $OUT/$ARCHIVE"
-ls -la "$OUT"
+bash packaging/zip-portable.sh "$VERSION"
