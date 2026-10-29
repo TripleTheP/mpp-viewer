@@ -174,7 +174,7 @@ public final class CellStyles
    /**
     * Wendet Textart und Zellformat auf den Zellinhalt an.
     *
-    * @param projectSummary Zeile ist der Projektsammelvorgang
+    * @param projectSummaryRow Zeile ist der Projektsammelvorgang
     */
    public CellContent apply(CellContent content, Task task, FieldType field, boolean isSummaryRow, boolean projectSummaryRow)
    {

@@ -183,7 +183,7 @@ public final class SampleProject
             continue;
          }
          int dur = (int) Math.round(t.getDuration().getDuration());
-         LocalDate startDay = nextWorkingDay(cal, START.toLocalDate(), 0);
+         LocalDate startDay = nextWorkingDay(cal, START.toLocalDate());
          boolean milestone = dur == 0;
          LocalDate msDay = null;
          for (Relation r : t.getPredecessors())
@@ -249,6 +249,10 @@ public final class SampleProject
          min = min == null || c.getStart().isBefore(min) ? c.getStart() : min;
          max = max == null || c.getFinish().isAfter(max) ? c.getFinish() : max;
       }
+      if (min == null || max == null)
+      {
+         return;
+      }
       t.setStart(min);
       t.setFinish(max);
       int days = 0;
@@ -262,7 +266,19 @@ public final class SampleProject
       t.setDuration(Duration.getInstance(days, TimeUnit.DAYS));
    }
 
-   private static LocalDate nextWorkingDay(ProjectCalendar cal, LocalDate d, int dummy)
+   private static double parseUnits(String assignment, String units)
+   {
+      try
+      {
+         return Double.parseDouble(units);
+      }
+      catch (NumberFormatException ex)
+      {
+         throw new IllegalArgumentException("Ungültige Einheiten in Zuordnung " + assignment, ex);
+      }
+   }
+
+   private static LocalDate nextWorkingDay(ProjectCalendar cal, LocalDate d)
    {
       LocalDate day = d;
       while (!cal.isWorkingDate(day))
@@ -336,7 +352,7 @@ public final class SampleProject
          String[] parts = a.split(":");
          Resource r = resources.get(parts[0]);
          ResourceAssignment ra = t.addResourceAssignment(r);
-         double units = parts.length > 1 ? Double.parseDouble(parts[1]) : (r.getType() == ResourceType.MATERIAL ? 1 : 100);
+         double units = parts.length > 1 ? parseUnits(a, parts[1]) : (r.getType() == ResourceType.MATERIAL ? 1 : 100);
          ra.setUnits(Double.valueOf(units));
          Duration work = Duration.getInstance(days * 8 * units / 100.0, TimeUnit.HOURS);
          ra.setWork(work);

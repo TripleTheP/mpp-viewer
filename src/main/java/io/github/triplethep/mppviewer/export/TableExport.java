@@ -84,7 +84,7 @@ public final class TableExport
                continue;
             }
             Object value = presenter.taskExportValue(row, col);
-            addValue(r, value, bold, col);
+            addValue(r, value, bold);
          }
       }
       sheet.freezeHeader();
@@ -101,7 +101,7 @@ public final class TableExport
          XlsxWriter.Row r = sheet.addRow();
          for (ColumnDef col : columns)
          {
-            addValue(r, presenter.resourceExportValue(res, col), false, col);
+            addValue(r, presenter.resourceExportValue(res, col), false);
          }
       }
       sheet.freezeHeader();
@@ -181,7 +181,7 @@ public final class TableExport
       };
    }
 
-   private static void addValue(XlsxWriter.Row r, Object value, boolean bold, ColumnDef col)
+   private static void addValue(XlsxWriter.Row r, Object value, boolean bold)
    {
       if (value == null)
       {

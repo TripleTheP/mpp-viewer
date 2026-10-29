@@ -1,5 +1,6 @@
 package io.github.triplethep.mppviewer.export;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -200,31 +201,31 @@ public final class XlsxWriter
          addSheet("Sheet1");
       }
       ZipOutputStream zip = new ZipOutputStream(out, StandardCharsets.UTF_8);
-      Writer w = new OutputStreamWriter(zip, StandardCharsets.UTF_8);
 
-      entry(zip, w, "[Content_Types].xml", contentTypes());
-      entry(zip, w, "_rels/.rels", rootRels());
-      entry(zip, w, "docProps/core.xml", core());
-      entry(zip, w, "docProps/app.xml", app());
-      entry(zip, w, "xl/workbook.xml", workbook());
-      entry(zip, w, "xl/_rels/workbook.xml.rels", workbookRels());
-      entry(zip, w, "xl/styles.xml", styles());
+      entry(zip, "[Content_Types].xml", contentTypes());
+      entry(zip, "_rels/.rels", rootRels());
+      entry(zip, "docProps/core.xml", core());
+      entry(zip, "docProps/app.xml", app());
+      entry(zip, "xl/workbook.xml", workbook());
+      entry(zip, "xl/_rels/workbook.xml.rels", workbookRels());
+      entry(zip, "xl/styles.xml", styles());
       for (int i = 0; i < sheets.size(); i++)
       {
-         zip.putNextEntry(new ZipEntry("xl/worksheets/sheet" + (i + 1) + ".xml"));
+         ByteArrayOutputStream sheetXml = new ByteArrayOutputStream();
+         Writer w = new OutputStreamWriter(sheetXml, StandardCharsets.UTF_8);
          writeSheet(w, sheets.get(i));
          w.flush();
+         zip.putNextEntry(new ZipEntry("xl/worksheets/sheet" + (i + 1) + ".xml"));
+         sheetXml.writeTo(zip);
          zip.closeEntry();
       }
       zip.finish();
-      w.flush();
    }
 
-   private static void entry(ZipOutputStream zip, Writer w, String name, String content) throws IOException
+   private static void entry(ZipOutputStream zip, String name, String content) throws IOException
    {
       zip.putNextEntry(new ZipEntry(name));
-      w.write(content);
-      w.flush();
+      zip.write(content.getBytes(StandardCharsets.UTF_8));
       zip.closeEntry();
    }
 

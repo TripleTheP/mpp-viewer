@@ -205,6 +205,7 @@ public final class LegendPainter
             g.setColor(Style.DEADLINE);
             g.fill(a);
          }
+         default -> throw new IllegalArgumentException("Unbekanntes Legendenelement: " + item);
       }
    }
 

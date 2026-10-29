@@ -290,7 +290,7 @@ public final class GanttPainter
 
       if (options.showBaseline() && !task.getNull())
       {
-         paintBaseline(g, task, row, rowTop);
+         paintBaseline(g, task, rowTop);
       }
 
       switch (bar.shape())
@@ -509,7 +509,7 @@ public final class GanttPainter
       g.fill(p);
    }
 
-   private void paintBaseline(Graphics2D g, Task task, TaskRow row, double rowTop)
+   private void paintBaseline(Graphics2D g, Task task, double rowTop)
    {
       LocalDateTime bs = task.getBaselineStart();
       LocalDateTime bf = task.getBaselineFinish();

@@ -761,7 +761,8 @@ public final class MainFrame extends JFrame implements BackstageHost
 
    private void updateEnabled()
    {
-      boolean loaded = model != null;
+      ProjectViewModel current = model;
+      boolean loaded = current != null;
       for (Component c : needsDocument)
       {
          c.setEnabled(loaded);
@@ -771,9 +772,9 @@ public final class MainFrame extends JFrame implements BackstageHost
          r.run();
       }
       statusBar.setDocumentLoaded(loaded);
-      if (loaded)
+      if (current != null)
       {
-         statusBar.setActiveView(model.getKind());
+         statusBar.setActiveView(current.getKind());
       }
    }
 
