@@ -15,6 +15,8 @@ import org.mpxj.reader.UniversalProjectReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -231,9 +233,15 @@ public final class ProjectDocument
          throw new ProjectLoadException(ProjectLoadException.Reason.NOT_FOUND, null);
       }
       ProjectFile project;
-      try
+      // Den Stream selbst öffnen und schließen: read(File) lässt die Datei offen, wenn MPXJ schon beim Erkennen des
+      // Formats scheitert – unter Windows bliebe sie dann bis zum Programmende gesperrt.
+      try (InputStream in = Files.newInputStream(file.toPath()))
       {
-         project = new UniversalProjectReader().read(file);
+         project = new UniversalProjectReader().read(in);
+      }
+      catch (IOException ex)
+      {
+         throw new ProjectLoadException(ProjectLoadException.Reason.READ_ERROR, ex);
       }
       catch (MPXJException ex)
       {
