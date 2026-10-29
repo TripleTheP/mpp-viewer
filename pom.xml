@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.github.triplethep</groupId>
+  <artifactId>mpp-viewer</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>MPP-Viewer</name>
+  <description>Portabler, schreibgeschützter Viewer für Microsoft-Project-Dateien (.mpp) mit Druck und Export.</description>
+  <url>https://github.com/TripleTheP/mpp-viewer</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <main.class>io.github.triplethep.mppviewer.App</main.class>
+    <dist.dir>${project.build.directory}/dist</dist.dir>
+
+    <mpxj.version>16.10.0</mpxj.version>
+    <flatlaf.version>3.7.2</flatlaf.version>
+    <pdfbox.version>3.0.8</pdfbox.version>
+    <pdfbox-graphics2d.version>3.0.5</pdfbox-graphics2d.version>
+    <junit.version>5.11.4</junit.version>
+  </properties>
+
+  <dependencies>
+    <!-- Liest .mpp und viele weitere Projektformate (LGPL 2.1) -->
+    <dependency>
+      <groupId>net.sf.mpxj</groupId>
+      <artifactId>mpxj</artifactId>
+      <version>${mpxj.version}</version>
+      <exclusions>
+        <!-- Nur für Primavera-SQLite und den MPXJ-Explorer nötig, spart ca. 15 MB -->
+        <exclusion>
+          <groupId>org.xerial</groupId>
+          <artifactId>sqlite-jdbc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.jgoodies</groupId>
+          <artifactId>jgoodies-binding</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Modernes Look-and-Feel inkl. farbiger Titelleiste unter Windows (Apache 2.0) -->
+    <dependency>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>${flatlaf.version}</version>
+    </dependency>
+
+    <!-- PDF-Export (Apache 2.0) -->
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>${pdfbox.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.rototor.pdfbox</groupId>
+      <artifactId>graphics2d</artifactId>
+      <version>${pdfbox-graphics2d.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>mpp-viewer</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources-filtered</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <propertiesEncoding>UTF-8</propertiesEncoding>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+          <compilerArgs>
+            <arg>-Xlint:all,-serial,-processing</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dlog4j2.loggerContextFactory=org.apache.logging.log4j.simple.SimpleLoggerContextFactory</argLine>
+          <systemPropertyVariables>
+            <mppviewer.testdata>${project.basedir}/testdata</mppviewer.testdata>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <!-- Haupt-Jar mit Class-Path auf lib/ – die Bibliotheken bleiben getrennte Dateien (LGPL-konform) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <outputDirectory>${dist.dir}</outputDirectory>
+          <archive>
+            <manifest>
+              <mainClass>${main.class}</mainClass>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>copy-runtime-libs</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <outputDirectory>${dist.dir}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

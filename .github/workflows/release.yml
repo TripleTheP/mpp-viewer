@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release für Windows bauen
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Version aus dem Tag übernehmen
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          mvn -B -ntp versions:set -DnewVersion="$VERSION" -DgenerateBackupPoms=false
+      - name: Build and test
+        run: mvn -B -ntp package
+      - name: Package (jlink + jpackage)
+        shell: bash
+        run: bash packaging/build-portable.sh "$VERSION"
+      - name: GitHub-Release anlegen
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ZIP=$(ls target/package/*.zip)
+          cat > release-notes.md <<NOTES
+          ## MPP-Viewer $VERSION
+
+          **Download:** \`$(basename "$ZIP")\` herunterladen, entpacken und \`MPP-Viewer\\MPP-Viewer.exe\` starten.
+          Keine Installation, keine Administratorrechte, kein Java nötig.
+
+          Schreibgeschützter Viewer für Microsoft-Project-Dateien (.mpp) mit Druck und Export nach PDF, Excel, PNG und CSV.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "MPP-Viewer $VERSION" --notes-file release-notes.md

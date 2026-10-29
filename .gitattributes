@@ -1,0 +1,6 @@
+* text=auto
+*.sh text eol=lf
+*.java text eol=lf
+*.properties text eol=lf
+*.ico binary
+*.png binary

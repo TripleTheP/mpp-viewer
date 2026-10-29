@@ -1,0 +1,13 @@
+target/
+/testdata
+*.class
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+/settings.properties
+/portable.properties
+.DS_Store
+Thumbs.db

@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build and test
+        run: mvn -B -ntp verify
+
+  windows-portable:
+    name: Portable Windows-Version
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build
+        run: mvn -B -ntp -DskipTests package
+      - name: Package (jlink + jpackage)
+        shell: bash
+        run: bash packaging/build-portable.sh
+      - name: Smoke test (exe exists and runtime starts)
+        shell: bash
+        run: |
+          test -f target/package/MPP-Viewer/MPP-Viewer.exe
+          target/package/MPP-Viewer/runtime/bin/java.exe -version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MPP-Viewer-windows-portable
+          path: target/package/*.zip
+          if-no-files-found: error
