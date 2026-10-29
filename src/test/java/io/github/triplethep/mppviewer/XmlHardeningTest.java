@@ -2,6 +2,7 @@ package io.github.triplethep.mppviewer;
 
 import io.github.triplethep.mppviewer.core.ProjectDocument;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class XmlHardeningTest
 {
    @Test
-   void externalEntitiesAreNotResolved(@TempDir Path dir) throws Exception
+   void externalEntitiesAreNotResolved(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path dir) throws Exception
    {
       App.hardenXmlParsing();
       Path secret = dir.resolve("geheim.txt");

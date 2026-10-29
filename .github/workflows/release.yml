@@ -83,8 +83,19 @@ jobs:
         if: steps.version.outputs.skip == 'false'
         shell: bash
         run: |
-          mvn -B -ntp versions:set -DnewVersion="${{ steps.version.outputs.version }}" -DgenerateBackupPoms=false
-          mvn -B -ntp package
+          mvn -B -ntp versions:set -DnewVersion="${{ steps.version.outputs.version }}" -DgenerateBackupPoms=false 2>&1 | tee build.log
+          mvn -B -ntp package 2>&1 | tee -a build.log
+
+      - name: Fehlerausgabe als Annotation
+        if: failure()
+        shell: bash
+        run: |
+          {
+            grep -hE "ERROR|FAIL|Tests run:|expected|Exception" build.log 2>/dev/null | tail -40
+            cat target/surefire-reports/*.txt 2>/dev/null | grep -vE "^-+$" | head -40
+          } > err.txt || true
+          msg=$(sed -e 's/%/%25/g' -e 's/\r//g' err.txt | awk 'BEGIN{ORS="%0A"} {print}')
+          echo "::error title=Build-Log::$msg"
 
       - name: Stückliste der Bibliotheken (SBOM, CycloneDX)
         if: steps.version.outputs.skip == 'false'

@@ -38,8 +38,19 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build
-        run: mvn -B -ntp -DskipTests package
+      - name: Build und Tests (Windows)
+        shell: bash
+        run: mvn -B -ntp package 2>&1 | tee build.log
+      - name: Fehlerausgabe als Annotation
+        if: failure()
+        shell: bash
+        run: |
+          {
+            grep -hE "ERROR|FAIL|Tests run:|expected|Exception" build.log 2>/dev/null | tail -40
+            cat target/surefire-reports/*.txt 2>/dev/null | grep -vE "^-+$" | head -40
+          } > err.txt || true
+          msg=$(sed -e 's/%/%25/g' -e 's/\r//g' err.txt | awk 'BEGIN{ORS="%0A"} {print}')
+          echo "::error title=Build-Log::$msg"
       - name: Package (jlink + jpackage)
         shell: bash
         run: bash packaging/build-portable.sh
