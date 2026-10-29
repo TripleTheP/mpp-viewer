@@ -102,8 +102,7 @@ jobs:
         shell: bash
         run: |
           mvn -B -ntp org.cyclonedx:cyclonedx-maven-plugin:2.9.3:makeBom -DoutputFormat=json -DoutputName=sbom -DincludeTestScope=false
-          mkdir -p target/package
-          cp target/sbom.json "target/package/MPP-Viewer-${{ steps.version.outputs.version }}-sbom.cdx.json"
+          test -s target/sbom.json
 
       - name: App-Image erzeugen (jlink + jpackage)
         if: steps.version.outputs.skip == 'false'
@@ -165,7 +164,9 @@ jobs:
         run: |
           (cd target/package/MPP-Viewer && ./MPP-Viewer.exe --export Beispielprojekt.xml smoke.pdf && test -s smoke.pdf && rm smoke.pdf)
           bash packaging/zip-portable.sh "${{ steps.version.outputs.version }}"
+          cp target/sbom.json "target/package/MPP-Viewer-${{ steps.version.outputs.version }}-sbom.cdx.json"
           cd target/package
+          shopt -s failglob
           for f in *.zip *.cdx.json MPP-Viewer/MPP-Viewer.exe; do
             printf '%s  %s\n' "$(sha256sum "$f" | cut -d' ' -f1)" "$f"
           done > SHA256SUMS.txt
