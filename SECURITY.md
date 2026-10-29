@@ -13,7 +13,7 @@ Firmenumgebungen ohne Sonderrechte betreiben lässt.
 | Projektdateien | werden ausschließlich **gelesen**; das Programm hat keine Speicherfunktion für .mpp-Dateien |
 | Schreibzugriffe | nur `%APPDATA%\MPP-Viewer\settings.properties` (Sprache, Fenstergröße, zuletzt geöffnete Dateien) und Exportdateien an dem Ort, den der Benutzer wählt. Mit einer Datei `portable.properties` im Programmordner liegen die Einstellungen stattdessen dort. |
 | Temporäre Dateien | keine eigenen; die native Bibliothek für den Fensterrahmen wird aus `app\lib` geladen, nicht aus `%TEMP%` |
-| Laufzeit | eigene, verkleinerte Java-21-Laufzeit (Eclipse Temurin) im Ordner `runtime`; ein installiertes Java wird weder benötigt noch verwendet. Das Andocken fremder Prozesse an die Java-Laufzeit (Attach-API) ist abgeschaltet. |
+| Laufzeit | eigene, verkleinerte Java-25-Laufzeit (Eclipse Temurin) im Ordner `runtime`; ein installiertes Java wird weder benötigt noch verwendet. Das Andocken fremder Prozesse an die Java-Laufzeit (Attach-API) ist abgeschaltet. |
 | Präparierte Dateien | XML-basierte Projektformate dürfen keine externen Dateien oder Adressen nachladen (Schutz vor XML External Entities) |
 
 ### Echtheit eines Downloads prüfen
