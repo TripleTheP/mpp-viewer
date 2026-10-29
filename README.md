@@ -53,6 +53,10 @@ Kennwortgeschützte Dateien können nicht geöffnet werden.
 2. ZIP an einen beliebigen Ort entpacken – z. B. `C:\Tools`, einen USB-Stick oder ein Netzlaufwerk.
 3. `MPP-Viewer\MPP-Viewer.exe` starten. **Keine Installation, keine Administratorrechte, kein Java nötig.**
 
+Code-Signierung: Die Windows-Version wird über die SignPath Foundation signiert – free code signing provided by
+[SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)
+(siehe [Code signing policy](#code-signing-policy)).
+
 Tipps:
 - `.mpp`-Datei per Drag & Drop ins Fenster ziehen oder im Explorer **Öffnen mit → MPP-Viewer.exe** wählen.
 - Zum Ausprobieren liegt `Beispielprojekt.xml` im Programmordner.
