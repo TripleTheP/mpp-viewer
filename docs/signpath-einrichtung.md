@@ -1,5 +1,10 @@
 # Signierung mit SignPath einrichten
 
+**Status:** Ein Antrag bei der SignPath Foundation wurde im Oktober 2026 abgelehnt. Die Releases erscheinen daher
+unsigniert, mit Prüfsummen und Herkunftsnachweis. Die Vorbereitung im Workflow bleibt bestehen und ist ohne
+hinterlegte Zugangsdaten wirkungslos. Ein erneuter Antrag ist sinnvoll, sobald das Projekt eine größere Verbreitung
+nachweisen kann (Downloads, Sterne, Erwähnungen).
+
 Der Release-Workflow (`.github/workflows/release.yml`) ist fertig vorbereitet. Er signiert `MPP-Viewer.exe`
 automatisch, sobald die Zugangsdaten von SignPath im Repository hinterlegt sind. Bis dahin entstehen
 unsignierte Releases (mit Prüfsummen und Herkunftsnachweis).
@@ -8,7 +13,10 @@ unsignierte Releases (mit Prüfsummen und Herkunftsnachweis).
 
 - Zwei-Faktor-Anmeldung (2FA) für das GitHub-Konto ist aktiv. SignPath verlangt sie für alle Beteiligten.
 - Das Projekt ist öffentlich, steht unter MIT-Lizenz und hat bereits ein Release. Das ist erfüllt.
-- Die README enthält den Abschnitt [Code signing policy](../README.md#code-signing-policy). Das ist ebenfalls erfüllt.
+- Die README enthält einen Abschnitt „Code signing policy“ mit dem Hinweis „Free code signing provided by
+  SignPath.io, certificate by SignPath Foundation“, den Rollen (Committer, Reviewer, Approver) und einem
+  Datenschutzhinweis. **Für einen erneuten Antrag muss dieser Abschnitt wieder ergänzt werden**; er wurde nach der
+  Ablehnung durch einen neutralen Abschnitt „Code signing“ ersetzt.
 
 ## 2. Antrag stellen
 

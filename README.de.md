@@ -75,10 +75,9 @@ Einstellungen (Sprache, Fenstergröße, zuletzt geöffnete Dateien) werden pro B
 `%APPDATA%\MPP-Viewer` gespeichert. Sollen sie im Programmordner liegen, dort neben `MPP-Viewer.exe` eine leere
 Datei `portable.properties` anlegen.
 
-**Code-Signierung:** Die Windows-Releases werden über die SignPath Foundation signiert. Free code signing provided
-by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). Details stehen
-in der [Code signing policy](#code-signing-policy). Die Signierung wird derzeit eingerichtet. Bis signierte Releases
-verfügbar sind, lassen sich Downloads über die veröffentlichten Prüfsummen und Herkunftsnachweise prüfen (siehe
+**Code-Signierung:** Die Releases sind derzeit nicht digital signiert. Windows SmartScreen kann deshalb beim ersten
+Start eine Warnung anzeigen; mit **Weitere Informationen → Trotzdem ausführen** wird das Programm gestartet. Die
+Echtheit eines Downloads lässt sich über die veröffentlichten Prüfsummen und Herkunftsnachweise prüfen (siehe
 [Downloads prüfen](#downloads-prüfen)).
 
 ## Export über die Kommandozeile
@@ -129,31 +128,20 @@ Get-FileHash .\MPP-Viewer-<Version>-windows-x64-portable.zip -Algorithm SHA256
 
 # Prüfen, dass die Datei von GitHub Actions aus diesem Repository gebaut wurde (GitHub CLI erforderlich)
 gh attestation verify .\MPP-Viewer-<Version>-windows-x64-portable.zip --repo TripleTheP/mpp-viewer
-
-# Digitale Signatur prüfen (signierte Releases)
-Get-AuthenticodeSignature .\MPP-Viewer\MPP-Viewer.exe
 ```
 
-## Code signing policy
+### Code-Signierung
 
-Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
-[SignPath Foundation](https://signpath.org).
+Die Releases sind derzeit nicht digital signiert. Die Echtheit wird über die SHA-256-Prüfsummen und die
+Herkunftsnachweise belegt; diese weisen nach, dass eine Datei von GitHub Actions aus diesem Repository gebaut wurde.
+Der Release-Workflow ist für eine Authenticode-Signierung vorbereitet
+([docs/signpath-einrichtung.md](docs/signpath-einrichtung.md)) und kann aktiviert werden, sobald ein Zertifikat zur
+Verfügung steht.
 
-- Signiert wird ausschließlich `MPP-Viewer.exe`. Die Datei wird von GitHub Actions auf GitHub-gehosteten Runnern
-  aus dem öffentlichen Quellcode dieses Repositorys gebaut.
-- Jede Signieranfrage wird von einem Approver manuell freigegeben.
-- Mitgelieferte Fremdkomponenten (Java-Laufzeit Eclipse Temurin, Java-Bibliotheken, native FlatLaf-Bibliothek)
-  werden unverändert ausgeliefert und nicht mit dem Projektzertifikat signiert.
+### Datenschutz
 
-| Rolle | Mitglieder |
-| --- | --- |
-| Committer und Reviewer | [TripleTheP](https://github.com/TripleTheP) |
-| Approver | [TripleTheP](https://github.com/TripleTheP) |
-
-**Datenschutz:** Das Programm überträgt keine Informationen an andere Systeme im Netzwerk, sofern dies nicht
-ausdrücklich von der Benutzerin oder dem Benutzer bzw. der installierenden oder betreibenden Person veranlasst wird.
-(This program will not transfer any information to other networked systems unless specifically requested by the
-user or the person installing or operating it.)
+Das Programm überträgt keine Informationen an andere Systeme im Netzwerk, sofern dies nicht ausdrücklich von der
+Benutzerin oder dem Benutzer bzw. der installierenden oder betreibenden Person veranlasst wird.
 
 ## Aus dem Quellcode bauen
 

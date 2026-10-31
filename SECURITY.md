@@ -18,13 +18,8 @@ Firmenumgebungen ohne Sonderrechte betreiben lässt.
 
 ### Echtheit eines Downloads prüfen
 
-Jedes Release auf GitHub enthält:
+Die Releases sind derzeit nicht digital signiert. Jedes Release auf GitHub enthält:
 
-- **Digitale Signatur** von `MPP-Viewer.exe` (sobald die Signierung über SignPath aktiv ist, siehe
-  [Code signing policy](README.md#code-signing-policy)). Prüfen in PowerShell:
-  ```powershell
-  Get-AuthenticodeSignature .\MPP-Viewer\MPP-Viewer.exe | Format-List Status, SignerCertificate, TimeStamperCertificate
-  ```
 - **SHA-256-Prüfsummen** in `SHA256SUMS.txt`:
   ```powershell
   Get-FileHash .\MPP-Viewer-1.0.1-windows-x64-portable.zip -Algorithm SHA256
@@ -41,11 +36,11 @@ Jedes Release auf GitHub enthält:
 ### Freigabe in AppLocker / WDAC / Intune
 
 - Empfohlen: das Programm zentral in einem Ordner bereitstellen, auf den Benutzer **nur Lesezugriff** haben
-  (z. B. `C:\Program Files\MPP-Viewer` oder eine schreibgeschützte Netzwerkfreigabe). Die Signatur schützt die
-  `.exe`; die Java-Bibliotheken in `app\lib` und die Startkonfiguration `app\MPP-Viewer.cfg` sind dagegen nur
-  durch die Dateirechte geschützt.
-- Mit Signatur: Herausgeberregel für `MPP-Viewer.exe` (Herausgeber „SignPath Foundation“, Produkt „MPP-Viewer“).
-- Ohne Signatur: Dateihash-Regel mit dem Hash aus `SHA256SUMS.txt`.
+  (z. B. `C:\Program Files\MPP-Viewer` oder eine schreibgeschützte Netzwerkfreigabe). Programmdatei,
+  Java-Bibliotheken in `app\lib` und Startkonfiguration `app\MPP-Viewer.cfg` sind dann durch die Dateirechte
+  geschützt.
+- Da die Releases nicht signiert sind, ist keine Herausgeberregel möglich. Stattdessen eine Dateihash-Regel für
+  `MPP-Viewer.exe` mit dem Hash aus `SHA256SUMS.txt` anlegen; bei jeder neuen Version ist sie zu aktualisieren.
 - Die Java-Laufzeit unter `runtime\bin` (z. B. `java.dll`, `jvm.dll`) stammt unverändert aus Eclipse Temurin.
   Falls DLL-Regeln aktiv sind, müssen diese Dateien ebenfalls zugelassen werden.
 

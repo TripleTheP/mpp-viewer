@@ -75,11 +75,9 @@ A sample project (`Beispielprojekt.xml`) is included in the program folder.
 Settings (language, window size, recently used files) are stored per user in `%APPDATA%\MPP-Viewer`. To keep
 them in the program folder instead, create an empty file named `portable.properties` next to `MPP-Viewer.exe`.
 
-**Code signing:** Windows releases are code-signed through the SignPath Foundation. Free code signing provided by
-[SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). See the
-[code signing policy](#code-signing-policy). Signing is currently being set up. Until signed releases are
-available, downloads can be verified with the published checksums and build attestations
-(see [Verifying downloads](#verifying-downloads)).
+**Code signing:** Releases are currently not code-signed. Windows SmartScreen may therefore show a warning when the
+program is started for the first time; select **More info → Run anyway** to continue. Downloads can be verified with
+the published checksums and build attestations (see [Verifying downloads](#verifying-downloads)).
 
 ## Command-line export
 
@@ -128,29 +126,19 @@ Get-FileHash .\MPP-Viewer-<version>-windows-x64-portable.zip -Algorithm SHA256
 
 # Verify that the file was built by GitHub Actions from this repository (requires GitHub CLI)
 gh attestation verify .\MPP-Viewer-<version>-windows-x64-portable.zip --repo TripleTheP/mpp-viewer
-
-# Check the digital signature (signed releases)
-Get-AuthenticodeSignature .\MPP-Viewer\MPP-Viewer.exe
 ```
 
-## Code signing policy
+### Code signing
 
-Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
-[SignPath Foundation](https://signpath.org).
+Releases are currently not code-signed. Authenticity is established through the SHA-256 checksums and the build
+provenance attestations above, which prove that a file was built by GitHub Actions from this repository. The release
+workflow is prepared for Authenticode signing ([docs/signpath-einrichtung.md](docs/signpath-einrichtung.md)) and
+can be enabled once a certificate is available.
 
-- Only `MPP-Viewer.exe` is signed. It is built by GitHub Actions on GitHub-hosted runners from the public source
-  code in this repository.
-- Every signing request is approved manually by an approver.
-- Bundled third-party components (the Eclipse Temurin Java runtime, Java libraries and the FlatLaf native library)
-  are shipped unmodified and are not signed with the project certificate.
+### Privacy
 
-| Role | Members |
-| --- | --- |
-| Committers and reviewers | [TripleTheP](https://github.com/TripleTheP) |
-| Approvers | [TripleTheP](https://github.com/TripleTheP) |
-
-**Privacy policy:** This program will not transfer any information to other networked systems unless specifically
-requested by the user or the person installing or operating it.
+This program will not transfer any information to other networked systems unless specifically requested by the
+user or the person installing or operating it.
 
 ## Building from source
 

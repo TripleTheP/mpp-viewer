@@ -211,7 +211,7 @@ jobs:
             echo "  \`gh attestation verify $ZIPNAME --repo $GITHUB_REPOSITORY\`"
             echo "- Stückliste aller enthaltenen Bibliotheken (SBOM, CycloneDX): \`MPP-Viewer-$VERSION-sbom.cdx.json\`"
             echo
-            echo "Hinweise für Administratoren: [SECURITY.md](https://github.com/$GITHUB_REPOSITORY/blob/v$VERSION/SECURITY.md) · [Code signing policy](https://github.com/$GITHUB_REPOSITORY#code-signing-policy)"
+            echo "Hinweise für Administratoren: [SECURITY.md](https://github.com/$GITHUB_REPOSITORY/blob/v$VERSION/SECURITY.md) · [Code signing](https://github.com/$GITHUB_REPOSITORY#code-signing)"
           } > release-notes.md
           ls -la target/package
           if ! out=$(gh release create "v$VERSION" "$ZIP" target/package/SHA256SUMS.txt target/package/*.cdx.json \
