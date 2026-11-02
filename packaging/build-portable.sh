@@ -93,6 +93,8 @@ cp README.md "$IMAGE/README.md"
 cp README.de.md "$IMAGE/LIESMICH.md"
 cp LICENSE "$IMAGE/LICENSE.txt"
 cp THIRD-PARTY-NOTICES.md "$IMAGE/THIRD-PARTY-NOTICES.md"
+cp -r licenses "$IMAGE/licenses"
+cp PRIVACY.md "$IMAGE/PRIVACY.md"
 cp SECURITY.md "$IMAGE/SECURITY.md"
 cp samples/Beispielprojekt.xml "$IMAGE/Beispielprojekt.xml"
 

@@ -138,7 +138,7 @@ can be enabled once a certificate is available.
 ### Privacy
 
 This program will not transfer any information to other networked systems unless specifically requested by the
-user or the person installing or operating it.
+user or the person installing or operating it. Details on locally stored settings: [PRIVACY.md](PRIVACY.md).
 
 ## Building from source
 

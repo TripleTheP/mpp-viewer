@@ -141,7 +141,8 @@ Verfügung steht.
 ### Datenschutz
 
 Das Programm überträgt keine Informationen an andere Systeme im Netzwerk, sofern dies nicht ausdrücklich von der
-Benutzerin oder dem Benutzer bzw. der installierenden oder betreibenden Person veranlasst wird.
+Benutzerin oder dem Benutzer bzw. der installierenden oder betreibenden Person veranlasst wird. Details zu den lokal
+gespeicherten Einstellungen: [PRIVACY.md](PRIVACY.md).
 
 ## Aus dem Quellcode bauen
 
