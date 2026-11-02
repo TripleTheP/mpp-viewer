@@ -22,12 +22,12 @@ Die Releases sind derzeit nicht digital signiert. Jedes Release auf GitHub enth�
 
 - **SHA-256-Prüfsummen** in `SHA256SUMS.txt`:
   ```powershell
-  Get-FileHash .\MPP-Viewer-1.0.1-windows-x64-portable.zip -Algorithm SHA256
+  Get-FileHash .\MPP-Viewer-<Version>-windows-x64-portable.zip -Algorithm SHA256
   ```
 - **Herkunftsnachweis** (Build-Provenance nach SLSA): belegt, dass ZIP und EXE von GitHub Actions aus genau
   diesem Repository und Commit gebaut wurden:
   ```powershell
-  gh attestation verify .\MPP-Viewer-1.0.1-windows-x64-portable.zip --repo TripleTheP/mpp-viewer
+  gh attestation verify .\MPP-Viewer-<Version>-windows-x64-portable.zip --repo TripleTheP/mpp-viewer
   gh attestation verify .\MPP-Viewer\MPP-Viewer.exe --repo TripleTheP/mpp-viewer
   ```
 - **Stückliste (SBOM)** aller enthaltenen Java-Bibliotheken im CycloneDX-Format (`*-sbom.cdx.json`), z. B. für
