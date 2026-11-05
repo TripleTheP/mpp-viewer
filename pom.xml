@@ -27,7 +27,7 @@
     <main.class>io.github.triplethep.mppviewer.App</main.class>
     <dist.dir>${project.build.directory}/dist</dist.dir>
 
-    <mpxj.version>16.10.0</mpxj.version>
+    <mpxj.version>16.11.0</mpxj.version>
     <flatlaf.version>3.7.2</flatlaf.version>
     <pdfbox.version>3.0.8</pdfbox.version>
     <pdfbox-graphics2d.version>3.0.5</pdfbox-graphics2d.version>
