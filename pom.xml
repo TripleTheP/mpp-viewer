@@ -28,7 +28,7 @@
     <dist.dir>${project.build.directory}/dist</dist.dir>
 
     <mpxj.version>16.10.0</mpxj.version>
-    <flatlaf.version>3.7.2</flatlaf.version>
+    <flatlaf.version>3.8</flatlaf.version>
     <pdfbox.version>3.0.8</pdfbox.version>
     <pdfbox-graphics2d.version>3.0.5</pdfbox-graphics2d.version>
     <junit.version>6.1.3</junit.version>
